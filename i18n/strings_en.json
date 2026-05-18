@@ -1,0 +1,21 @@
+{
+  "AUTOSHUTDOWN": {
+    "TITLE": "Auto-Shutdown",
+    "CONFIG_SECTION": "Auto-Shutdown Configuration",
+    "ENABLED": "Enable Auto-Shutdown",
+    "ENABLED_DOC": "Turn on to automatically shut down Volumio after a set period of inactivity.",
+    "INACTIVE_TIME": "Inactivity Time (Minutes)",
+    "INACTIVE_TIME_DOC": "Number of minutes of inactivity before shutting down.",
+    "CHECK_INTERVAL": "Check Interval (Seconds)",
+    "CHECK_INTERVAL_DOC": "How often to check for player and audio status.",
+    "SOUND_CARD": "Sound Card",
+    "SOUND_CARD_DOC": "Select the active sound card to monitor for audio playback status (PCM status).",
+    "SHUTDOWN_METHOD": "Shutdown Method",
+    "SHUTDOWN_METHOD_DOC": "Select how the system is powered off.",
+    "METHOD_VOLUMIO": "Standard Shutdown (shutdown -h now)",
+    "METHOD_ONOFFSHIM": "OnOff SHIM (GPIO17 Pulse)",
+    "SAVE": "Save Settings",
+    "TOAST_SAVE_TITLE": "Configuration Saved",
+    "TOAST_SAVE_MSG": "Auto-shutdown settings have been successfully applied."
+  }
+}

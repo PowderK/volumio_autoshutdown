@@ -1,0 +1,22 @@
+{
+  "enabled": {
+    "type": "boolean",
+    "value": true
+  },
+  "inactiveTime": {
+    "type": "number",
+    "value": 20
+  },
+  "checkInterval": {
+    "type": "number",
+    "value": 30
+  },
+  "soundCard": {
+    "type": "string",
+    "value": "card1"
+  },
+  "shutdownMethod": {
+    "type": "string",
+    "value": "volumio"
+  }
+}

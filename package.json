@@ -1,0 +1,24 @@
+{
+  "name": "autoshutdown",
+  "version": "1.0.0",
+  "description": "Automatically shuts down Volumio after a period of inactivity, checking both player state and hardware PCM audio status.",
+  "main": "index.js",
+  "author": "Benni",
+  "license": "GPL-3.0",
+  "repository": "",
+  "engines": {
+    "node": ">=8.0.0",
+    "volumio": ">=3.0.0"
+  },
+  "volumio_info": {
+    "prettyName": "Auto-Shutdown",
+    "icon": "fa-power-off",
+    "plugin_type": "system_controller",
+    "boot_priority": 10
+  },
+  "dependencies": {
+    "fs-extra": "^0.28.0",
+    "kew": "^0.7.0",
+    "v-conf": "^1.4.0"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "page": {
+    "label": "AUTOSHUTDOWN.TITLE"
+  },
+  "sections": [
+    {
+      "id": "section_config",
+      "element": "section",
+      "label": "AUTOSHUTDOWN.CONFIG_SECTION",
+      "icon": "fa-power-off",
+      "onSave": {
+        "plugin": "system_controller/autoshutdown",
+        "method": "saveConfig"
+      },
+      "saveButton": {
+        "label": "AUTOSHUTDOWN.SAVE",
+        "data": [
+          "enabled",
+          "inactiveTime",
+          "checkInterval",
+          "soundCard",
+          "shutdownMethod"
+        ]
+      },
+      "content": [
+        {
+          "id": "enabled",
+          "type": "checkbox",
+          "element": "switch",
+          "label": "AUTOSHUTDOWN.ENABLED",
+          "doc": "AUTOSHUTDOWN.ENABLED_DOC",
+          "value": true
+        },
+        {
+          "id": "inactiveTime",
+          "type": "number",
+          "element": "input",
+          "label": "AUTOSHUTDOWN.INACTIVE_TIME",
+          "doc": "AUTOSHUTDOWN.INACTIVE_TIME_DOC",
+          "value": 20
+        },
+        {
+          "id": "checkInterval",
+          "type": "number",
+          "element": "input",
+          "label": "AUTOSHUTDOWN.CHECK_INTERVAL",
+          "doc": "AUTOSHUTDOWN.CHECK_INTERVAL_DOC",
+          "value": 30
+        },
+        {
+          "id": "soundCard",
+          "type": "select",
+          "element": "select",
+          "label": "AUTOSHUTDOWN.SOUND_CARD",
+          "doc": "AUTOSHUTDOWN.SOUND_CARD_DOC",
+          "value": {
+            "value": "card1",
+            "label": "card1"
+          },
+          "options": []
+        },
+        {
+          "id": "shutdownMethod",
+          "type": "select",
+          "element": "select",
+          "label": "AUTOSHUTDOWN.SHUTDOWN_METHOD",
+          "doc": "AUTOSHUTDOWN.SHUTDOWN_METHOD_DOC",
+          "value": {
+            "value": "volumio",
+            "label": "AUTOSHUTDOWN.METHOD_VOLUMIO"
+          },
+          "options": [
+            {
+              "value": "volumio",
+              "label": "AUTOSHUTDOWN.METHOD_VOLUMIO"
+            },
+            {
+              "value": "onoffshim",
+              "label": "AUTOSHUTDOWN.METHOD_ONOFFSHIM"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
