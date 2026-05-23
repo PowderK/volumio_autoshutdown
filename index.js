@@ -32,7 +32,7 @@ controller.prototype.onStart = function() {
     var self = this;
     var defer = libQ.defer();
 
-    self.logger.info('Auto-Shutdown: Starting plugin...');
+    self.log('Starting plugin...');
     self.startCheckLoop();
 
     defer.resolve();
@@ -43,7 +43,7 @@ controller.prototype.onStop = function() {
     var self = this;
     var defer = libQ.defer();
 
-    self.logger.info('Auto-Shutdown: Stopping plugin...');
+    self.log('Stopping plugin...');
     self.stopCheckLoop();
 
     defer.resolve();
@@ -269,7 +269,7 @@ controller.prototype.startCheckLoop = function() {
 
     var enabled = self.config.get('enabled');
     if (enabled === false) {
-        self.logger.info('Auto-Shutdown: Plugin is disabled. Not starting check loop.');
+        self.log('Plugin is disabled. Not starting check loop.');
         return;
     }
 
@@ -279,14 +279,14 @@ controller.prototype.startCheckLoop = function() {
     var checkIntervalSec = self.config.get('checkInterval') || 30;
     var checkIntervalMs = checkIntervalSec * 1000;
 
-    self.logger.info('Auto-Shutdown: Starting inactivity monitor loop. Interval: ' + checkIntervalSec + 's');
+    self.log('Starting inactivity monitor loop. Interval: ' + checkIntervalSec + 's');
     self.checkIntervalId = setInterval(self.checkInactivity.bind(self), checkIntervalMs);
 };
 
 controller.prototype.stopCheckLoop = function() {
     var self = this;
     if (self.checkIntervalId !== null) {
-        self.logger.info('Auto-Shutdown: Stopping inactivity monitor loop.');
+        self.log('Stopping inactivity monitor loop.');
         clearInterval(self.checkIntervalId);
         self.checkIntervalId = null;
     }
@@ -316,16 +316,16 @@ controller.prototype.checkInactivity = function() {
     if (isSystemActive) {
         // Reset the timer since there is active audio output or playback
         self.lastActiveTime = now;
-        self.logger.debug('Auto-Shutdown: System is active. Resetting inactivity timer. (Volumio=' + (volumioState ? volumioState.status : 'N/A') + ', PCM=' + (isPcmActive ? 'RUNNING' : 'CLOSED') + ')');
+        self.log('System is active. Resetting inactivity timer. (Volumio=' + (volumioState ? volumioState.status : 'N/A') + ', PCM=' + (isPcmActive ? 'RUNNING' : 'CLOSED') + ')');
     } else {
         var elapsedSec = Math.floor((now - self.lastActiveTime) / 1000);
         var inactiveMinutesConfig = self.config.get('inactiveTime') || 20;
         var thresholdSec = inactiveMinutesConfig * 60;
 
-        self.logger.info('Auto-Shutdown: System is inactive. Elapsed: ' + elapsedSec + 's / Limit: ' + thresholdSec + 's (Volumio=' + (volumioState ? volumioState.status : 'N/A') + ', PCM=CLOSED)');
+        self.log('System is inactive. Elapsed: ' + elapsedSec + 's / Limit: ' + thresholdSec + 's (Volumio=' + (volumioState ? volumioState.status : 'N/A') + ', PCM=CLOSED)');
 
         if (elapsedSec >= thresholdSec) {
-            self.logger.info('Auto-Shutdown: Inactivity threshold reached (' + elapsedSec + 's >= ' + thresholdSec + 's). Triggering shutdown.');
+            self.log('Inactivity threshold reached (' + elapsedSec + 's >= ' + thresholdSec + 's). Triggering shutdown.');
             self.triggerShutdown();
         }
     }
@@ -344,37 +344,37 @@ controller.prototype.triggerShutdown = function() {
     var shutdownMethod = self.config.get('shutdownMethod') || 'volumio';
     
     if (shutdownMethod === 'onoffshim') {
-        self.logger.info('Auto-Shutdown: Shutting down via OnOff SHIM (GPIO17 Pulse sequence)...');
+        self.log('Shutting down via OnOff SHIM (GPIO17 Pulse sequence)...');
         
         var exec = require('child_process').exec;
         exec('command -v raspi-gpio', function(err, stdout, stderr) {
             if (!err && stdout.trim() !== '') {
-                self.logger.info('Auto-Shutdown: Using raspi-gpio for OnOff SHIM pulse.');
+                self.log('Using raspi-gpio for OnOff SHIM pulse.');
                 exec('raspi-gpio set 17 op dl && sleep 0.2 && raspi-gpio set 17 ip pu', function(e, o, se) {
                     if (e) {
-                        self.logger.error('Auto-Shutdown: raspi-gpio pulse failed: ' + e);
+                        self.log('ERROR: raspi-gpio pulse failed: ' + e);
                         self.executeDirectShutdown();
                     }
                 });
             } else {
                 exec('command -v gpio', function(err2, stdout2, stderr2) {
                     if (!err2 && stdout2.trim() !== '') {
-                        self.logger.info('Auto-Shutdown: Using gpio (wiringPi) for OnOff SHIM pulse.');
+                        self.log('Using gpio (wiringPi) for OnOff SHIM pulse.');
                         exec('gpio -g mode 17 out && gpio -g write 17 0 && sleep 0.2 && gpio -g mode 17 in && gpio -g mode 17 up', function(e, o, se) {
                             if (e) {
-                                self.logger.error('Auto-Shutdown: gpio pulse failed: ' + e);
+                                self.log('ERROR: gpio pulse failed: ' + e);
                                 self.executeDirectShutdown();
                             }
                         });
                     } else {
-                        self.logger.warn('Auto-Shutdown: No GPIO control utility found (neither raspi-gpio nor gpio). Falling back to direct shutdown.');
+                        self.log('WARNING: No GPIO control utility found (neither raspi-gpio nor gpio). Falling back to direct shutdown.');
                         self.executeDirectShutdown();
                     }
                 });
             }
         });
     } else {
-        self.logger.info('Auto-Shutdown: Shutting down via standard system command...');
+        self.log('Shutting down via standard system command...');
         self.executeDirectShutdown();
     }
 };
@@ -383,15 +383,33 @@ controller.prototype.executeDirectShutdown = function() {
     var self = this;
     var exec = require('child_process').exec;
     
-    self.logger.info('Auto-Shutdown: Executing sudo shutdown -h now...');
+    self.log('Executing sudo shutdown -h now...');
     exec('sudo /sbin/shutdown -h now', function(err, stdout, stderr) {
         if (err) {
-            self.logger.error('Auto-Shutdown: Standard shutdown failed: ' + err + '. Trying sudo poweroff fallback.');
+            self.log('ERROR: Standard shutdown failed: ' + err + '. Trying sudo poweroff fallback.');
             exec('sudo poweroff', function(err2, stdout2, stderr2) {
                 if (err2) {
-                    self.logger.error('Auto-Shutdown: Direct poweroff failed: ' + err2);
+                    self.log('ERROR: Direct poweroff failed: ' + err2);
                 }
             });
         }
     });
+};
+
+controller.prototype.log = function(message) {
+    var self = this;
+    var timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    var logMsg = timestamp + ' - ' + message + '\n';
+    
+    self.logger.info('Auto-Shutdown: ' + message);
+    
+    try {
+        fs.appendFileSync('/var/log/volumio-autoshutdown.log', logMsg);
+    } catch (e) {
+        try {
+            fs.appendFileSync('/home/volumio/volumio-autoshutdown.log', logMsg);
+        } catch (e2) {
+            // Ignore write failures (e.g. read-only filesystem or permissions)
+        }
+    }
 };

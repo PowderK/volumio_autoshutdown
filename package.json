@@ -1,6 +1,6 @@
 {
   "name": "autoshutdown",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically shuts down Volumio after a period of inactivity, checking both player state and hardware PCM audio status.",
   "main": "index.js",
   "author": "Benni",
